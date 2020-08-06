@@ -10,15 +10,29 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The type Employee repo.
+ */
 @Component
 public class EmployeeRepo {
 
     private final EmployeeRepository employeeRepository;
 
+    /**
+     * Instantiates a new Employee repo.
+     *
+     * @param employeeRepository the employee repository
+     */
     public EmployeeRepo(final EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
     }
 
+    /**
+     * Add or update employee.
+     *
+     * @param employee the employee
+     * @throws InternalServerErrorException the internal server error exception
+     */
     @Transactional
     public void addOrUpdateEmployee(final Employee employee)
             throws InternalServerErrorException {
@@ -30,6 +44,12 @@ public class EmployeeRepo {
     }
 
 
+    /**
+     * Gets employees.
+     *
+     * @return the employees
+     * @throws InternalServerErrorException the internal server error exception
+     */
     @Transactional
     public List<Employee> getEmployees() throws InternalServerErrorException {
         try {
@@ -39,6 +59,14 @@ public class EmployeeRepo {
         }
     }
 
+    /**
+     * Gets employee by id.
+     *
+     * @param id the id
+     * @return the employee by id
+     * @throws InternalServerErrorException the internal server error exception
+     * @throws BadRequestException          the bad request exception
+     */
     @Transactional
     public Employee getEmployeeById(final Long id) throws InternalServerErrorException, BadRequestException {
         Optional<Employee> employeeOptional;
@@ -58,6 +86,12 @@ public class EmployeeRepo {
     }
 
 
+    /**
+     * Delete employee.
+     *
+     * @param employee the employee
+     * @throws InternalServerErrorException the internal server error exception
+     */
     @Transactional
     public void deleteEmployee(final Employee employee) throws InternalServerErrorException {
 

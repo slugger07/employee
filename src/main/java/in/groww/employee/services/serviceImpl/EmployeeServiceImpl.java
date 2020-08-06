@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * The type Employee service.
+ */
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
@@ -22,8 +25,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepo employeeRepo;
 
+    /**
+     * The constant employeeMapper.
+     */
     final static EmployeeMapper employeeMapper = Mappers.getMapper(EmployeeMapper.class);
 
+    /**
+     * Instantiates a new Employee service.
+     *
+     * @param employeeRepo the employee repo
+     */
     public EmployeeServiceImpl(final EmployeeRepo employeeRepo) {
         this.employeeRepo = employeeRepo;
     }
