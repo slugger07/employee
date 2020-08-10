@@ -106,4 +106,15 @@ public class EmployeeDto {
     public void setGender(final String gender) {
         this.gender = gender;
     }
+
+    @Override
+    public String toString() {
+        return "EmployeeDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", role='" + role + '\'' +
+                ", dob=" + dob +
+                ", gender='" + gender + '\'' +
+                '}';
+    }
 }

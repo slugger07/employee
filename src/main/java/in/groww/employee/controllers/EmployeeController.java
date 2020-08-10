@@ -4,6 +4,7 @@ import in.groww.employee.dtos.EmployeeDto;
 import in.groww.employee.dtos.ResponseMessage;
 import in.groww.employee.exceptions.BadRequestException;
 import in.groww.employee.exceptions.InternalServerErrorException;
+import in.groww.employee.services.senders.RabbitMQSender;
 import in.groww.employee.services.serviceImpl.EmployeeServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +20,17 @@ public class EmployeeController {
 
     private final EmployeeServiceImpl employeeService;
 
+    private final RabbitMQSender rabbitMQSender;
+
     /**
      * Instantiates a new Employee controller.
      *
      * @param employeeService the employee service
+     * @param rabbitMQSender
      */
-    public EmployeeController(final EmployeeServiceImpl employeeService) {
+    public EmployeeController(final EmployeeServiceImpl employeeService, final RabbitMQSender rabbitMQSender) {
         this.employeeService = employeeService;
+        this.rabbitMQSender = rabbitMQSender;
     }
 
 
@@ -85,6 +90,18 @@ public class EmployeeController {
 
         employeeService.addOrUpdateEmployee(employeeDto);
         return new ResponseEntity<>(new ResponseMessage("Successfully Updated"),HttpStatus.OK);
+    }
+
+    /**
+     * Update employee by rmq response entity.
+     *
+     * @param employeeDto the employee dto
+     * @return the response entity
+     */
+    @PutMapping("/RMQUpdate")
+    public ResponseEntity<ResponseMessage> updateEmployeeByRMQ(@RequestBody EmployeeDto employeeDto) {
+        rabbitMQSender.send(employeeDto);
+        return new ResponseEntity<>(new ResponseMessage("Successfully Updated Using RMQ"),HttpStatus.OK);
     }
 
     /**

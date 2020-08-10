@@ -1,7 +1,11 @@
 package in.groww.employee.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Date;
 
 /**
@@ -9,7 +13,7 @@ import java.sql.Date;
  */
 @Entity
 @Table(name = "employees")
-public class Employee {
+public class Employee implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -116,5 +120,16 @@ public class Employee {
      */
     public void setGender(final String gender) {
         this.gender = gender;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", role='" + role + '\'' +
+                ", dob=" + dob +
+                ", gender='" + gender + '\'' +
+                '}';
     }
 }

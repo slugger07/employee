@@ -1,4 +1,4 @@
-package in.groww.employee.components;
+package in.groww.employee.services;
 
 import in.groww.employee.exceptions.BadRequestException;
 import in.groww.employee.exceptions.InternalServerErrorException;
@@ -14,7 +14,7 @@ import java.util.Optional;
  * The type Employee repo.
  */
 @Component
-public class EmployeeRepo {
+public class Transaction {
 
     private final EmployeeRepository employeeRepository;
 
@@ -23,7 +23,7 @@ public class EmployeeRepo {
      *
      * @param employeeRepository the employee repository
      */
-    public EmployeeRepo(final EmployeeRepository employeeRepository) {
+    public Transaction(final EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
     }
 
@@ -36,6 +36,7 @@ public class EmployeeRepo {
     @Transactional
     public void addOrUpdateEmployee(final Employee employee)
             throws InternalServerErrorException {
+
         try {
             employeeRepository.save(employee);
         } catch (Exception e) {
@@ -52,6 +53,7 @@ public class EmployeeRepo {
      */
     @Transactional
     public List<Employee> getEmployees() throws InternalServerErrorException {
+
         try {
             return employeeRepository.findAll();
         } catch (Exception e) {
@@ -74,7 +76,7 @@ public class EmployeeRepo {
         try {
             employeeOptional = employeeRepository.findById(id);
         } catch (Exception e) {
-            throw new InternalServerErrorException("Cannot fetch employees");
+            throw new InternalServerErrorException("Couldn't fetch employee");
         }
 
         if(employeeOptional.isPresent()) {
@@ -98,7 +100,7 @@ public class EmployeeRepo {
         try {
             employeeRepository.delete(employee);
         } catch (Exception e) {
-            throw new InternalServerErrorException("Cannot delete employees");
+            throw new InternalServerErrorException("Cannot delete Employee");
         }
     }
 

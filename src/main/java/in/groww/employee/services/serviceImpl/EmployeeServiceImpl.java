@@ -1,6 +1,6 @@
 package in.groww.employee.services.serviceImpl;
 
-import in.groww.employee.components.EmployeeRepo;
+import in.groww.employee.services.Transaction;
 import in.groww.employee.dtos.EmployeeDto;
 import in.groww.employee.exceptions.BadRequestException;
 import in.groww.employee.exceptions.InternalServerErrorException;
@@ -23,7 +23,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
-    private final EmployeeRepo employeeRepo;
+    private final Transaction transaction;
 
     /**
      * The constant employeeMapper.
@@ -33,10 +33,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     /**
      * Instantiates a new Employee service.
      *
-     * @param employeeRepo the employee repo
+     * @param transaction the employee repo
      */
-    public EmployeeServiceImpl(final EmployeeRepo employeeRepo) {
-        this.employeeRepo = employeeRepo;
+    public EmployeeServiceImpl(final Transaction transaction) {
+        this.transaction = transaction;
     }
 
 
@@ -44,7 +44,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<EmployeeDto> getAllEmployees() throws InternalServerErrorException {
 
         LOGGER.info("Getting all Employees");
-        final List<Employee> employees = employeeRepo.getEmployees();
+        final List<Employee> employees = transaction.getEmployees();
         return employeeMapper.convertEmployeeListModelIntoDto(employees);
     }
 
@@ -54,7 +54,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             InternalServerErrorException {
 
         LOGGER.info("Getting an Employee using Id");
-        final Employee employee = employeeRepo.getEmployeeById(id);
+        final Employee employee = transaction.getEmployeeById(id);
         return employeeMapper.convertEmployeeModelIntoDto(employee);
     }
 
@@ -63,15 +63,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void addOrUpdateEmployee(final EmployeeDto employeeDto) throws InternalServerErrorException {
 
         LOGGER.info("Adding or Updating an Employee");
-        employeeRepo.addOrUpdateEmployee(employeeMapper.convertEmployeeDtoIntoModel(employeeDto));
+        transaction.addOrUpdateEmployee(employeeMapper.convertEmployeeDtoIntoModel(employeeDto));
     }
 
 
     @Override
     public void deleteEmployeeById(final Long id) throws BadRequestException, InternalServerErrorException {
 
-        final Employee employee = employeeRepo.getEmployeeById(id);
-
-        employeeRepo.deleteEmployee(employee);
+        final Employee employee = transaction.getEmployeeById(id);
+        transaction.deleteEmployee(employee);
     }
 }
