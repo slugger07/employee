@@ -8,6 +8,7 @@ import org.springframework.cache.annotation.EnableCaching;
  * The type Employee application.
  */
 @SpringBootApplication
+@EnableCaching
 public class EmployeeApplication {
 
     /**

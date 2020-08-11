@@ -63,7 +63,7 @@ public class EmployeeController {
     public ResponseEntity<ResponseMessageWithId> addEmployee(@RequestBody EmployeeDto employeeDto)
             throws InternalServerErrorException {
 
-        final String id = employeeService.addOrUpdateEmployee(employeeDto);
+        final String id = employeeService.addOrUpdateEmployee(employeeDto).getId();
         return new ResponseEntity<>(new ResponseMessageWithId(
                 "Successfully Added the Employee", id),HttpStatus.OK);
     }
@@ -95,7 +95,7 @@ public class EmployeeController {
     ResponseEntity<ResponseMessageWithId> replaceEmployee(@RequestBody EmployeeDto employeeDto)
             throws InternalServerErrorException {
 
-        final String id = employeeService.addOrUpdateEmployee(employeeDto);
+        final String id = employeeService.addOrUpdateEmployee(employeeDto).getId();
         return new ResponseEntity<>(new ResponseMessageWithId(
                 "Successfully Updated Employee", id),HttpStatus.OK);
     }

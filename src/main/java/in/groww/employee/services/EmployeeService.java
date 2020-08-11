@@ -37,7 +37,7 @@ public interface EmployeeService {
      * @param employeeDto the employee dto
      * @throws InternalServerErrorException the internal server error exception
      */
-    String addOrUpdateEmployee(final EmployeeDto employeeDto) throws InternalServerErrorException;
+    EmployeeDto addOrUpdateEmployee(final EmployeeDto employeeDto) throws InternalServerErrorException;
 
     /**
      * Delete employee by id.

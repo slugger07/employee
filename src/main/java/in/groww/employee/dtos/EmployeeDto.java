@@ -1,8 +1,5 @@
 package in.groww.employee.dtos;
 
-import org.springframework.data.redis.core.RedisHash;
-
-import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
@@ -10,7 +7,8 @@ import java.io.Serializable;
  */
 public class EmployeeDto implements Serializable {
 
-    @Id
+    private static final long serialVersionUID = 1L;
+
     private String id;
 
     private String name;
