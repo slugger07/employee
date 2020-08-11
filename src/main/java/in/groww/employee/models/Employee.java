@@ -1,12 +1,10 @@
 package in.groww.employee.models;
 
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Date;
 
 /**
  * The type Employee.
@@ -16,18 +14,19 @@ import java.sql.Date;
 public class Employee implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name="UUID",
+            strategy="org.hibernate.id.UUIDGenerator"
+    )
     @Column(name = "id", nullable = false, unique = true)
-    private Long id;
+    private String id;
 
     @Column(name = "name")
     private String name;
 
     @Column(name = "role")
     private String role;
-
-    @Column(name = "dob")
-    private Date dob;
 
     @Column(name = "gender")
     private String gender;
@@ -37,7 +36,7 @@ public class Employee implements Serializable {
      *
      * @return the id
      */
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
@@ -46,7 +45,7 @@ public class Employee implements Serializable {
      *
      * @param id the id
      */
-    public void setId(final Long id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -87,24 +86,6 @@ public class Employee implements Serializable {
     }
 
     /**
-     * Gets dob.
-     *
-     * @return the dob
-     */
-    public Date getDob() {
-        return dob;
-    }
-
-    /**
-     * Sets dob.
-     *
-     * @param dob the dob
-     */
-    public void setDob(final Date dob) {
-        this.dob = dob;
-    }
-
-    /**
      * Gets gender.
      *
      * @return the gender
@@ -128,7 +109,6 @@ public class Employee implements Serializable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", role='" + role + '\'' +
-                ", dob=" + dob +
                 ", gender='" + gender + '\'' +
                 '}';
     }

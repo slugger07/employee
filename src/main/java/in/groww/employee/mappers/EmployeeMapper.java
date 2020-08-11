@@ -21,6 +21,7 @@ public interface EmployeeMapper {
     EmployeeDto convertEmployeeModelIntoDto(
             final Employee employee);
 
+
     /**
      * Convert employee dto into model employee.
      *

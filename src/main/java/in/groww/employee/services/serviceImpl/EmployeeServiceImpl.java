@@ -1,5 +1,6 @@
 package in.groww.employee.services.serviceImpl;
 
+import in.groww.employee.services.RedisOperation;
 import in.groww.employee.services.Transaction;
 import in.groww.employee.dtos.EmployeeDto;
 import in.groww.employee.exceptions.BadRequestException;
@@ -25,6 +26,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final Transaction transaction;
 
+    private final RedisOperation redisOperation;
+
+
     /**
      * The constant employeeMapper.
      */
@@ -32,11 +36,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * Instantiates a new Employee service.
-     *
      * @param transaction the employee repo
+     * @param redisOperation
      */
-    public EmployeeServiceImpl(final Transaction transaction) {
+    public EmployeeServiceImpl(final Transaction transaction, final RedisOperation redisOperation) {
+
         this.transaction = transaction;
+        this.redisOperation = redisOperation;
     }
 
 
@@ -44,33 +50,70 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<EmployeeDto> getAllEmployees() throws InternalServerErrorException {
 
         LOGGER.info("Getting all Employees");
-        final List<Employee> employees = transaction.getEmployees();
-        return employeeMapper.convertEmployeeListModelIntoDto(employees);
+
+        return getAllEmployeesFromDbAndUpdateRedis();
     }
 
 
     @Override
-    public EmployeeDto getEmployee(final Long id) throws BadRequestException,
+    public EmployeeDto getEmployee(final String id) throws BadRequestException,
             InternalServerErrorException {
 
         LOGGER.info("Getting an Employee using Id");
-        final Employee employee = transaction.getEmployeeById(id);
-        return employeeMapper.convertEmployeeModelIntoDto(employee);
+
+        return  redisOperation.containsKey(id) ? redisOperation.getObjectFromRedis(id)
+                : getEmployeeFromDbAndUpdateRedis(id);
     }
 
 
     @Override
-    public void addOrUpdateEmployee(final EmployeeDto employeeDto) throws InternalServerErrorException {
+    public String addOrUpdateEmployee(final EmployeeDto employeeDto) throws
+            InternalServerErrorException {
 
         LOGGER.info("Adding or Updating an Employee");
-        transaction.addOrUpdateEmployee(employeeMapper.convertEmployeeDtoIntoModel(employeeDto));
+
+        final String employeeId = transaction.addOrUpdateEmployee(
+                employeeMapper.convertEmployeeDtoIntoModel(employeeDto));
+
+        employeeDto.setId(employeeId);
+        redisOperation.save(employeeDto);
+
+        return employeeId;
     }
 
 
     @Override
-    public void deleteEmployeeById(final Long id) throws BadRequestException, InternalServerErrorException {
+    public void deleteEmployeeById(final String id) throws
+            BadRequestException, InternalServerErrorException {
 
         final Employee employee = transaction.getEmployeeById(id);
+        redisOperation.remove(id);
         transaction.deleteEmployee(employee);
     }
+
+    private EmployeeDto getEmployeeFromDbAndUpdateRedis(final String id) throws
+            BadRequestException, InternalServerErrorException {
+
+        LOGGER.info("Employee not found in Redis.. retrieving from database");
+
+        final EmployeeDto employeeDto = employeeMapper.convertEmployeeModelIntoDto(
+                transaction.getEmployeeById(id));
+
+        redisOperation.save(employeeDto);
+        return employeeDto;
+    }
+
+    private List<EmployeeDto> getAllEmployeesFromDbAndUpdateRedis() throws
+            InternalServerErrorException {
+
+        LOGGER.info("Employees not found in Redis.. retrieving from database");
+
+        final List<EmployeeDto> employeeDto = employeeMapper.convertEmployeeListModelIntoDto(
+                transaction.getEmployees());
+
+        redisOperation.saveAll(employeeDto);
+        return employeeDto;
+    }
+
+
 }

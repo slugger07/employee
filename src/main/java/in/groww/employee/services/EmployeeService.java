@@ -29,7 +29,7 @@ public interface EmployeeService {
      * @throws BadRequestException          the bad request exception
      * @throws InternalServerErrorException the internal server error exception
      */
-    EmployeeDto getEmployee(final Long id) throws BadRequestException, InternalServerErrorException;
+    EmployeeDto getEmployee(final String id) throws BadRequestException, InternalServerErrorException;
 
     /**
      * Add or update employee.
@@ -37,7 +37,7 @@ public interface EmployeeService {
      * @param employeeDto the employee dto
      * @throws InternalServerErrorException the internal server error exception
      */
-    void addOrUpdateEmployee(final EmployeeDto employeeDto) throws InternalServerErrorException;
+    String addOrUpdateEmployee(final EmployeeDto employeeDto) throws InternalServerErrorException;
 
     /**
      * Delete employee by id.
@@ -46,5 +46,5 @@ public interface EmployeeService {
      * @throws BadRequestException          the bad request exception
      * @throws InternalServerErrorException the internal server error exception
      */
-    void deleteEmployeeById(final Long Id) throws BadRequestException, InternalServerErrorException;
+     void deleteEmployeeById(final String Id) throws BadRequestException, InternalServerErrorException;
 }

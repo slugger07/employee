@@ -34,11 +34,11 @@ public class Transaction {
      * @throws InternalServerErrorException the internal server error exception
      */
     @Transactional
-    public void addOrUpdateEmployee(final Employee employee)
+    public String addOrUpdateEmployee(final Employee employee)
             throws InternalServerErrorException {
 
         try {
-            employeeRepository.save(employee);
+            return employeeRepository.saveAndFlush(employee).getId();
         } catch (Exception e) {
             throw new InternalServerErrorException("Cannot add or update Employee");
         }
@@ -70,7 +70,7 @@ public class Transaction {
      * @throws BadRequestException          the bad request exception
      */
     @Transactional
-    public Employee getEmployeeById(final Long id) throws InternalServerErrorException, BadRequestException {
+    public Employee getEmployeeById(final String id) throws InternalServerErrorException, BadRequestException {
         Optional<Employee> employeeOptional;
 
         try {
@@ -103,5 +103,7 @@ public class Transaction {
             throw new InternalServerErrorException("Cannot delete Employee");
         }
     }
+
+
 
 }

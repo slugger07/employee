@@ -1,19 +1,21 @@
 package in.groww.employee.dtos;
 
-import java.util.Date;
+import org.springframework.data.redis.core.RedisHash;
+
+import javax.persistence.Id;
+import java.io.Serializable;
 
 /**
  * The type Employee dto.
  */
-public class EmployeeDto {
+public class EmployeeDto implements Serializable {
 
-    private Long id;
+    @Id
+    private String id;
 
     private String name;
 
     private String role;
-
-    private Date dob;
 
     private String gender;
 
@@ -22,7 +24,7 @@ public class EmployeeDto {
      *
      * @return the id
      */
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
@@ -31,7 +33,7 @@ public class EmployeeDto {
      *
      * @param id the id
      */
-    public void setId(final Long id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -72,24 +74,6 @@ public class EmployeeDto {
     }
 
     /**
-     * Gets dob.
-     *
-     * @return the dob
-     */
-    public Date getDob() {
-        return dob;
-    }
-
-    /**
-     * Sets dob.
-     *
-     * @param dob the dob
-     */
-    public void setDob(final Date dob) {
-        this.dob = dob;
-    }
-
-    /**
      * Gets gender.
      *
      * @return the gender
@@ -113,7 +97,6 @@ public class EmployeeDto {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", role='" + role + '\'' +
-                ", dob=" + dob +
                 ", gender='" + gender + '\'' +
                 '}';
     }

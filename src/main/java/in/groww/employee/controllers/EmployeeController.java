@@ -2,8 +2,10 @@ package in.groww.employee.controllers;
 
 import in.groww.employee.dtos.EmployeeDto;
 import in.groww.employee.dtos.ResponseMessage;
+import in.groww.employee.dtos.ResponseMessageWithId;
 import in.groww.employee.exceptions.BadRequestException;
 import in.groww.employee.exceptions.InternalServerErrorException;
+import in.groww.employee.services.senders.KafkaProducer;
 import in.groww.employee.services.senders.RabbitMQSender;
 import in.groww.employee.services.serviceImpl.EmployeeServiceImpl;
 import org.springframework.http.HttpStatus;
@@ -22,15 +24,18 @@ public class EmployeeController {
 
     private final RabbitMQSender rabbitMQSender;
 
+    private final KafkaProducer kafkaProducer;
+
     /**
      * Instantiates a new Employee controller.
-     *
-     * @param employeeService the employee service
+     *  @param employeeService the employee service
      * @param rabbitMQSender
+     * @param kafkaProducer
      */
-    public EmployeeController(final EmployeeServiceImpl employeeService, final RabbitMQSender rabbitMQSender) {
+    public EmployeeController(final EmployeeServiceImpl employeeService, final RabbitMQSender rabbitMQSender, final KafkaProducer kafkaProducer) {
         this.employeeService = employeeService;
         this.rabbitMQSender = rabbitMQSender;
+        this.kafkaProducer = kafkaProducer;
     }
 
 
@@ -41,7 +46,7 @@ public class EmployeeController {
      * @throws InternalServerErrorException the internal server error exception
      */
     @GetMapping("/employees")
-    List<EmployeeDto> all() throws InternalServerErrorException {
+    public List<EmployeeDto> all() throws InternalServerErrorException {
         return employeeService.getAllEmployees();
     }
 
@@ -53,12 +58,14 @@ public class EmployeeController {
      * @return the response entity
      * @throws InternalServerErrorException the internal server error exception
      */
+
     @PostMapping("/addEmployee")
-    ResponseEntity<ResponseMessage> addEmployee(@RequestBody EmployeeDto employeeDto)
+    public ResponseEntity<ResponseMessageWithId> addEmployee(@RequestBody EmployeeDto employeeDto)
             throws InternalServerErrorException {
 
-        employeeService.addOrUpdateEmployee(employeeDto);
-        return new ResponseEntity<>(new ResponseMessage("Successfully Added"),HttpStatus.OK);
+        final String id = employeeService.addOrUpdateEmployee(employeeDto);
+        return new ResponseEntity<>(new ResponseMessageWithId(
+                "Successfully Added the Employee", id),HttpStatus.OK);
     }
 
 
@@ -71,7 +78,7 @@ public class EmployeeController {
      * @throws InternalServerErrorException the internal server error exception
      */
     @GetMapping("/employees/{id}")
-    ResponseEntity<EmployeeDto> getEmployee(@PathVariable Long id) throws BadRequestException,
+    public ResponseEntity<EmployeeDto> getEmployee(@PathVariable String id) throws BadRequestException,
             InternalServerErrorException {
 
         return new ResponseEntity<>(employeeService.getEmployee(id), HttpStatus.OK);
@@ -85,11 +92,12 @@ public class EmployeeController {
      * @throws InternalServerErrorException the internal server error exception
      */
     @PutMapping("/updateEmployee")
-    ResponseEntity<ResponseMessage> replaceEmployee(@RequestBody EmployeeDto employeeDto)
+    ResponseEntity<ResponseMessageWithId> replaceEmployee(@RequestBody EmployeeDto employeeDto)
             throws InternalServerErrorException {
 
-        employeeService.addOrUpdateEmployee(employeeDto);
-        return new ResponseEntity<>(new ResponseMessage("Successfully Updated"),HttpStatus.OK);
+        final String id = employeeService.addOrUpdateEmployee(employeeDto);
+        return new ResponseEntity<>(new ResponseMessageWithId(
+                "Successfully Updated Employee", id),HttpStatus.OK);
     }
 
     /**
@@ -98,12 +106,19 @@ public class EmployeeController {
      * @param employeeDto the employee dto
      * @return the response entity
      */
-    @PutMapping("/RMQUpdate")
+    @PutMapping("/updateEmployeeData")
     public ResponseEntity<ResponseMessage> updateEmployeeByRMQ(@RequestBody EmployeeDto employeeDto) {
+
         rabbitMQSender.send(employeeDto);
         return new ResponseEntity<>(new ResponseMessage("Successfully Updated Using RMQ"),HttpStatus.OK);
     }
 
+    @PutMapping("/publishEmployee")
+    public ResponseEntity<ResponseMessage> updateEmployeeByKafka(@RequestBody EmployeeDto employeeDataDto) {
+
+        kafkaProducer.updateEmployee(employeeDataDto);
+        return new ResponseEntity<>(new ResponseMessage("Successfully Updated Using kafka"),HttpStatus.OK);
+    }
     /**
      * Delete employee response entity.
      *
@@ -113,7 +128,7 @@ public class EmployeeController {
      * @throws InternalServerErrorException the internal server error exception
      */
     @DeleteMapping("/deleteEmployee/{id}")
-    ResponseEntity<ResponseMessage> deleteEmployee(@PathVariable Long id) throws BadRequestException, InternalServerErrorException {
+    ResponseEntity<ResponseMessage> deleteEmployee(@PathVariable String id) throws BadRequestException, InternalServerErrorException {
 
         employeeService.deleteEmployeeById(id);
         return new ResponseEntity<>(new ResponseMessage("Successfully Deleted"), HttpStatus.OK);
