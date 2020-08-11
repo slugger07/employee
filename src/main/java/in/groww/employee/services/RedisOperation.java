@@ -1,5 +1,6 @@
 package in.groww.employee.services;
 
+import in.groww.employee.constants.RedisConstants;
 import in.groww.employee.dtos.EmployeeDto;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -31,12 +32,12 @@ public class RedisOperation {
 
     public void saveAll(final List<EmployeeDto> employeeDtoList) {
         for (EmployeeDto employeeDto : employeeDtoList) {
-            valueOperations.set(employeeDto.getId(), employeeDto, 5, TimeUnit.MINUTES);
+            valueOperations.set(employeeDto.getId(), employeeDto, RedisConstants.TIME_TO_LIVE, TimeUnit.MINUTES);
         }
     }
 
     public void save(final EmployeeDto employeeDto) {
-        valueOperations.set(employeeDto.getId(), employeeDto, 5, TimeUnit.MINUTES);
+        valueOperations.set(employeeDto.getId(), employeeDto, RedisConstants.TIME_TO_LIVE, TimeUnit.MINUTES);
     }
 
     public void remove(final String id) {

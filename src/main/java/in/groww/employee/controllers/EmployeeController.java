@@ -32,7 +32,8 @@ public class EmployeeController {
      * @param rabbitMQSender
      * @param kafkaProducer
      */
-    public EmployeeController(final EmployeeServiceImpl employeeService, final RabbitMQSender rabbitMQSender, final KafkaProducer kafkaProducer) {
+    public EmployeeController(final EmployeeServiceImpl employeeService, final RabbitMQSender rabbitMQSender,
+                              final KafkaProducer kafkaProducer) {
         this.employeeService = employeeService;
         this.rabbitMQSender = rabbitMQSender;
         this.kafkaProducer = kafkaProducer;
@@ -128,10 +129,10 @@ public class EmployeeController {
      * @throws InternalServerErrorException the internal server error exception
      */
     @DeleteMapping("/deleteEmployee/{id}")
-    ResponseEntity<ResponseMessage> deleteEmployee(@PathVariable String id) throws BadRequestException, InternalServerErrorException {
+    ResponseEntity<ResponseMessageWithId> deleteEmployee(@PathVariable String id) throws BadRequestException, InternalServerErrorException {
 
         employeeService.deleteEmployeeById(id);
-        return new ResponseEntity<>(new ResponseMessage("Successfully Deleted"), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseMessageWithId("Successfully Deleted the Item", id), HttpStatus.OK);
     }
 }
 

@@ -50,7 +50,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<EmployeeDto> getAllEmployees() throws InternalServerErrorException {
 
         LOGGER.info("Getting all Employees");
-
         return getAllEmployeesFromDbAndUpdateRedis();
     }
 
